@@ -55,12 +55,13 @@ auto Network::connectToMatch(PlayerController& controller, std::string baseAddre
         spdlog::info("Round {} Started", round);
       }
 
+      controller.ReceiveEvent(event);
+
       if (event.type == Event::Type::End) {
         spdlog::info("Game Completed");
         gameRunning = false;
+        break;
       }
-
-      controller.ReceiveEvent(event);
     }
 
     if (makeDecision) {
