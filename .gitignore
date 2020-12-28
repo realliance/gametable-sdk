@@ -1,0 +1,67 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+.vs/
+
+# Tool Exectuable
+*.tool
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# IDE directories
+.vscode
+.idea
+
+# Persistent settings file
+settings.json
+
+# CMake
+cmake-build-debug
+
+# Graph Formats
+*.gv
+*.tgf
+
+release
+
+build/
+
+vgcore.*
+callgrind.out.*
+*.svg
