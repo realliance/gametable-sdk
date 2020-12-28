@@ -28,7 +28,7 @@ using GametableSDK::Helper::eventToJson, GametableSDK::Helper::parseHand;
 using MahjongHttp::JSONHelper::parseEvent;
 
 auto Network::connectToMatch(PlayerController& controller, std::string baseAddress) -> void {
-  spdlog::info("Connecting with instance of ", controller.Name());
+  spdlog::info("Connecting with instance of {}", controller.Name());
   Client client;
   client.init();
 
@@ -36,10 +36,13 @@ auto Network::connectToMatch(PlayerController& controller, std::string baseAddre
 
   if (!registered) {
     spdlog::error("Was unable to register with gametable sever successfully.");
+    client.shutdown();
     return;
   }
 
   blockUntilMatchReady(client, baseAddress);
+  spdlog::info("Match Started");
+  uint8_t round = 0;
 
   bool gameRunning = true;
 
@@ -48,9 +51,12 @@ auto Network::connectToMatch(PlayerController& controller, std::string baseAddre
     for (const auto& event : events) {
       if (event.type == Event::Type::Dora) {
         controller.RoundStart(startingHand, seatWind, prevalentWind);
+        round++;
+        spdlog::info("Round {} Started", round);
       }
 
       if (event.type == Event::Type::End) {
+        spdlog::info("Game Completed");
         gameRunning = false;
       }
 
@@ -61,8 +67,10 @@ auto Network::connectToMatch(PlayerController& controller, std::string baseAddre
       sendDecision(client, baseAddress, token, controller.RetrieveDecision());
     }
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
+
+  client.shutdown();
 }
 
 auto Network::registerForMatch(Client& client, std::string baseAddress) -> std::tuple<bool, std::string> {
@@ -77,7 +85,7 @@ auto Network::registerForMatch(Client& client, std::string baseAddress) -> std::
       Document d;
       d.Parse(res.body().c_str());
       token = d["playerToken"].GetString();
-      spdlog::info("Registered Successfully. token ", token.c_str());
+      spdlog::info("Registered Successfully. token {}", token);
       registered = true;
     }
   }, IgnoreException);
@@ -98,7 +106,6 @@ auto Network::blockUntilMatchReady(Client& client, std::string baseAddress) -> v
         Document d;
         d.Parse(res.body().c_str());
         gameRunning = d["gameRunning"].GetBool();
-        spdlog::info(gameRunning);
       }
     }, IgnoreException);
     
@@ -106,7 +113,7 @@ auto Network::blockUntilMatchReady(Client& client, std::string baseAddress) -> v
     barrier.wait_for(std::chrono::seconds(5));
 
     spdlog::info("Waiting for game to start...");
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(3));
   }
 }
 
