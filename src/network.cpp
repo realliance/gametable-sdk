@@ -39,7 +39,7 @@ auto Network::connectToMatch(PlayerController& controller, std::string baseAddre
     return;
   }
 
-  blockUntilMatchReady(client, token);
+  blockUntilMatchReady(client, baseAddress);
 
   bool gameRunning = true;
 
@@ -77,7 +77,7 @@ auto Network::registerForMatch(Client& client, std::string baseAddress) -> std::
       Document d;
       d.Parse(res.body().c_str());
       token = d["playerToken"].GetString();
-      spdlog::info("Registered Successfully. token ", token);
+      spdlog::info("Registered Successfully. token ", token.c_str());
       registered = true;
     }
   }, IgnoreException);
